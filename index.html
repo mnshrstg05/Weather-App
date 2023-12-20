@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+
+    <!-- <link rel="stylesheet" href="style.css" /> -->
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Economica&family=Grape+Nuts&family=Roboto:wght@100;300;400;700;900&display=swap");
+  
+  * {
+  margin: 0%;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  }
+  
+  .container {
+  width: 100%;
+  height: 100vh;
+  background-color: rgb(236, 39, 39);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  }
+  
+  .container::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-image: url("./bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  opacity: 0.4;
+  }
+  
+  .weather {
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  color: white;
+  }
+  
+  .weather > div {
+  margin: 0.625rem;
+  }
+  
+  .weather1 {
+  font-size: 4rem;
+  }
+  
+  .weather p {
+  font-size: 2rem;
+  }
+  .weather span {
+  font-size: 0.75rem;
+  }
+  
+  .weather3 span {
+  margin: 0.3rem;
+  }
+  
+  .weather3 img {
+  width: 2rem;
+  }
+  nav {
+  height: 100px;
+  border-radius: 100px 100px 0 0;
+  padding: 1rem 0;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.18);
+  position: absolute;
+  bottom: 0%;
+  width: 100%;
+  background-color: rgba(180, 177, 177, 0.075);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  }
+  
+  nav form {
+  width: 70%;
+  grid-template-columns: 5fr 1fr;
+  display: grid;
+  }
+  
+  .searchField {
+  font-size: 1.1rem;
+  outline: none;
+  color: rgb(10, 10, 10);
+  background-color: transparent;
+  padding: 1rem 0;
+  border: none;
+  border-bottom: 2px solid white;
+  width: 98%;
+  }
+  
+  nav form button {
+  background-color: rgb(255, 195, 100);
+  border-radius: 0 25px 25px 0;
+  font-size: 1.1rem;
+  color: white;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  }
+  
+    </style>
+  
+  </head>
+  <body>
+    <div class="container">
+      <div class="weather">
+        <div class="weather1">17°</div>
+        <div class="weather2">
+          <p>Loca</p>
+          <span>11:01 - Monday 2022-06-22</span>
+        </div>
+
+        <div class="weather3">
+          <p><img src="" alt="condition" /></p>
+          <span>Condition</span>
+        </div>
+      </div>
+    </div>
+
+    <nav>
+      <form>
+        <input type="text" placeholder="Search Location" class="searchField" />
+        <button type="submit">Search</button>
+      </form>
+    </nav>
+  </body>
+ 
+  <!-- <script src="./index.js"></script> -->
+  <script>
+    
+// Initializing all elements constants
+const temperateField = document.querySelector(".weather1");
+const cityField = document.querySelector(".weather2 p");
+const dateField = document.querySelector(".weather2 span");
+const emojiField = document.querySelector(".weather3 img");
+const weatherField = document.querySelector(".weather3 span");
+const searchField = document.querySelector(".searchField");
+const form = document.querySelector("form");
+
+// Adding event listen to the form
+form.addEventListener("submit", search);
+
+// Default Location
+let target = "delhi";
+
+// Function to fetch Data from Weather API
+const fetchData = async (target) => {
+  try {
+    const url = `https://api.weatherapi.com/v1/current.json?key=5b27a6ef3547402582e62007222306&q=${target}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    // Destructuring
+    const {
+      current: {
+        temp_c,
+        condition: { text, icon },
+      },
+      location: { name, localtime },
+    } = data;
+
+    // Calling update Dom Function
+    updateDom(temp_c, name, localtime, icon, text);
+  } catch (error) {
+    alert("Location not found");
+  }
+};
+
+// Function to update Dom
+function updateDom(temperate, city, time, emoji, text) {
+  const exactTime = time.split(" ")[1];
+  const exactDate = time.split(" ")[0];
+  const exactDay = getDayFullName(new Date(exactDate).getDay());
+
+  temperateField.innerText = temperate;
+  cityField.innerText = city;
+  dateField.innerText = `${exactTime} - ${exactDay}   ${exactDate}`;
+  emojiField.src = emoji;
+  weatherField.innerText = text;
+}
+
+fetchData(target);
+
+// Function to search the location
+function search(e) {
+  e.preventDefault();
+
+  target = searchField.value;
+
+  fetchData(target);
+}
+
+// Function to get the name of day
+function getDayFullName(num) {
+  switch (num) {
+    case 0:
+      return "Sunday";
+
+    case 1:
+      return "Monday";
+
+    case 2:
+      return "Tuesday";
+
+    case 3:
+      return "Wednesday";
+
+    case 4:
+      return "Thursday";
+
+    case 5:
+      return "Friday";
+
+    case 6:
+      return "Saturdat";
+
+    default:
+      return "Don't Know";
+  }
+}
+
+  </script>
+</html>
